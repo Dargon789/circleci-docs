@@ -75,6 +75,6 @@
     "@fontsource/inter": "^5.2.5",
     "@tailwindcss/postcss": "^4.1.4",
     "simple-datatables": "^10.0.0",
-    "tailwindcss": "^4.1.4"
+    "tailwindcss": "^4.1.16"
   }
 }
