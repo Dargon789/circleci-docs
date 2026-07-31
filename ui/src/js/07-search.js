@@ -11,7 +11,7 @@
   let PAGINATION_MAX_VISIBLE_PAGES = 5
   const SEARCH_DEBOUNCE_MS = 300
   const MIN_QUERY_LENGTH = 2
-  const MOBILE_BREAKPOINT = 768 // md breakpoint (in pixels)
+  const MOBILE_BREAKPOINT = 768 // md breakpoint (in pixels) — matches when header search bar becomes visible
 
   function setupSearch () {
     // State variables
@@ -30,11 +30,15 @@
       mobileSearchInput: document.querySelector('[data-page-navigation] [data-search-input]'),
       clearButton: document.querySelector('header [data-search-clear]'),
       mobileClearButton: document.querySelector('[data-page-navigation] [data-search-clear]'),
+      keyboardShortcut: document.querySelector('header [data-keyboard-shortcut]'),
+      mobileKeyboardShortcut: document.querySelector('[data-page-navigation] [data-keyboard-shortcut]'),
+      componentExplorerNav: document.querySelector('header [data-component-explorer-nav]'),
       searchContainer: document.querySelector('header [data-search-results-container]'),
       mobileSearchContainer: document.querySelector('[data-page-navigation] [data-search-results-container]'),
+      mobileAskAiButton: document.querySelector('[data-page-navigation] [data-ask-ai-button]'),
       navigation: document.querySelector('[data-page-navigation]'),
       leftSideNav: document.querySelector('[data-left-side-nav-container]'),
-      goToAppMobileButton: document.querySelector('[data-left-side-nav-container] + a'),
+      goToAppMobileButton: document.querySelector('[data-go-to-app-mobile]'),
       searchResultPathsContainer: null,
       mobileSearchResultPathsContainer: null,
       pathsList: null,
@@ -105,7 +109,7 @@
 
     // ===== SEARCH FUNCTIONALITY =====
 
-    async function search (searchQuery, componentPath) {
+    async function search (searchQuery, componentPath, skipUrlUpdate) {
       // Reset to first page when component path changes
       if (componentPath && paginationData?.currentPath !== componentPath) {
         paginationData = { page: 0 }
@@ -114,7 +118,7 @@
       const results = await searchIndex.search(searchQuery, {
         hitsPerPage: 10,
         page: paginationData?.page || 0,
-        attributesToRetrieve: ['title', 'url', 'relUrl', 'path', 'content', 'component', 'version'],
+        attributesToRetrieve: ['title', 'heading', 'url', 'relUrl', 'path', 'content', 'component', 'version'],
         highlightPreTag: '<strong class="font-bold">',
         highlightPostTag: '</strong>',
         facets: ['component'],
@@ -136,7 +140,11 @@
       setCurrentPath(componentPath ?? 'All')
       updatePathsList(componentPath ?? 'All')
       setResults(results.hits)
-      console.log('Search results:', results)
+
+      // Update URL with search state (query, component, and pagination)
+      if (!skipUrlUpdate) {
+        updateUrlWithSearchState(searchQuery, paginationData.page, paginationData.currentPath)
+      }
     }
 
     // ===== DISPLAY FUNCTIONS =====
@@ -284,10 +292,14 @@
         const titleElement = resultElement.querySelector('h3')
         const contentElement = resultElement.querySelector('p')
 
-        titleElement.innerHTML = hit._highlightResult.title.value
+        const pageTitle = hit._highlightResult?.title?.value ?? hit.title ?? ''
+        const sectionHeading = hit._highlightResult?.heading?.value ?? hit.heading ?? ''
+        titleElement.innerHTML = (sectionHeading && sectionHeading !== pageTitle)
+          ? `${pageTitle} <span class="font-normal opacity-50">/ ${sectionHeading}</span>`
+          : pageTitle
 
         // Cap content to approximately 2 lines (~200 characters)
-        const contentText = hit._highlightResult.content.value
+        const contentText = hit._highlightResult?.content?.value ?? hit.content ?? ''
         contentElement.innerHTML = contentText.length > 300
           ? contentText.substring(0, 200).replace(/\s+\S*$/, '') + '...'
           : contentText
@@ -444,14 +456,17 @@
     function showMobileSearchResults () {
       if (!elements.mobileSearchContainer || !elements.leftSideNav) return
 
-      // Hide the navigation content
       elements.leftSideNav.classList.add('hidden')
-      elements.goToAppMobileButton.classList.add('hidden')
-
-      // Show the search results
+      if (elements.goToAppMobileButton) elements.goToAppMobileButton.classList.add('hidden')
       elements.mobileSearchContainer.classList.remove('hidden')
 
-      // Open the navigation panel if it's closed
+      elements.clearButton.classList.remove('flex')
+      elements.clearButton.classList.add('hidden')
+      if (elements.mobileClearButton) {
+        elements.mobileClearButton.classList.remove('hidden')
+        elements.mobileClearButton.classList.add('flex')
+      }
+
       if (elements.navigation.classList.contains('-translate-x-full')) {
         elements.navigation.classList.remove('-translate-x-full')
       }
@@ -460,12 +475,14 @@
     function hideMobileSearchResults () {
       if (!elements.mobileSearchContainer || !elements.leftSideNav) return
 
-      // Show the navigation content
       elements.leftSideNav.classList.remove('hidden')
-      elements.goToAppMobileButton.classList.remove('hidden')
-
-      // Hide the search results
+      if (elements.goToAppMobileButton) elements.goToAppMobileButton.classList.remove('hidden')
       elements.mobileSearchContainer.classList.add('hidden')
+
+      if (elements.mobileClearButton) {
+        elements.mobileClearButton.classList.remove('flex')
+        elements.mobileClearButton.classList.add('hidden')
+      }
     }
 
     function updateSearchUIForScreenSize () {
@@ -474,15 +491,17 @@
       // Reset UI when switching between mobile and desktop
       if (query.length >= MIN_QUERY_LENGTH) {
         if (isMobileView) {
-          // On mobile: show search in navigation panel
           elements.searchContainer.classList.add('hidden')
           elements.header.classList.remove('h-dvh')
+          if (elements.componentExplorerNav) elements.componentExplorerNav.classList.remove('hidden')
           showMobileSearchResults()
         } else {
-          // On desktop: show search in header
           hideMobileSearchResults()
           elements.searchContainer.classList.remove('hidden')
           elements.header.classList.add('h-dvh')
+          if (elements.componentExplorerNav) elements.componentExplorerNav.classList.add('hidden')
+          elements.clearButton.classList.remove('hidden')
+          elements.clearButton.classList.add('flex')
         }
       }
     }
@@ -505,21 +524,21 @@
         elements.searchInput.value = query
       }
 
+      // Hide Ask AI button on mobile while typing to give search more space
+      if (elements.mobileAskAiButton) {
+        elements.mobileAskAiButton.classList.toggle('hidden', query.length > 0)
+      }
+
+      // Update keyboard shortcut visibility based on input value
+      updateKeyboardShortcutVisibility()
+
       if (query.length < MIN_QUERY_LENGTH) {
-        // Hide search results in both desktop and mobile
         elements.searchContainer.classList.add('hidden')
         elements.header.classList.remove('h-dvh')
+        if (elements.componentExplorerNav) elements.componentExplorerNav.classList.remove('hidden')
         elements.clearButton.classList.remove('flex')
         elements.clearButton.classList.add('hidden')
-
-        if (elements.mobileSearchContainer) {
-          elements.mobileSearchContainer.classList.add('hidden')
-          if (elements.leftSideNav) elements.leftSideNav.classList.remove('hidden')
-          if (elements.mobileClearButton) {
-            elements.mobileClearButton.classList.remove('flex')
-            elements.mobileClearButton.classList.add('hidden')
-          }
-        }
+        hideMobileSearchResults()
         return
       }
 
@@ -527,16 +546,12 @@
         await search(query)
 
         if (isMobileView) {
-          // Mobile view: show results in navigation panel
           showMobileSearchResults()
-          if (elements.mobileClearButton) {
-            elements.mobileClearButton.classList.remove('hidden')
-            elements.mobileClearButton.classList.add('flex')
-          }
         } else {
           // Desktop view: show results in header
           elements.searchContainer.classList.remove('hidden')
           elements.header.classList.add('h-dvh')
+          if (elements.componentExplorerNav) elements.componentExplorerNav.classList.add('hidden')
           elements.clearButton.classList.remove('hidden')
           elements.clearButton.classList.add('flex')
         }
@@ -544,24 +559,14 @@
     }
 
     function handleClearSearch () {
-      query = ''
-      elements.searchInput.value = ''
-      if (elements.mobileSearchInput) elements.mobileSearchInput.value = ''
+      // Clear the search UI
+      handleClearSearchUI()
 
-      // Hide desktop search
-      elements.searchContainer.classList.add('hidden')
-      elements.header.classList.remove('h-dvh')
-      elements.clearButton.classList.remove('flex')
-      elements.clearButton.classList.add('hidden')
+      // Clear URL parameters
+      updateUrlWithSearchState('', 0, null)
 
-      // Hide mobile search
-      if (elements.mobileSearchContainer) {
-        hideMobileSearchResults()
-        if (elements.mobileClearButton) {
-          elements.mobileClearButton.classList.remove('flex')
-          elements.mobileClearButton.classList.add('hidden')
-        }
-      }
+      // Update keyboard shortcut visibility
+      updateKeyboardShortcutVisibility()
     }
 
     function handlePrevPage (e) {
@@ -578,11 +583,198 @@
       }
     }
 
+    // ===== URL PARAMETER HANDLING =====
+
+    function updateUrlWithSearchState (searchQuery, page, componentPath) {
+      const url = new URL(window.location)
+
+      if (!searchQuery || searchQuery.length < MIN_QUERY_LENGTH) {
+        // Remove search parameters if query is cleared or too short
+        url.searchParams.delete('q')
+        url.searchParams.delete('page')
+        url.searchParams.delete('component')
+        window.history.pushState({}, '', url)
+        return
+      }
+
+      // Update URL with search query
+      url.searchParams.set('q', searchQuery)
+
+      // Add component parameter if not "All" (the default)
+      if (componentPath && componentPath !== 'All') {
+        // Strip trailing colon for cleaner URLs (e.g., "Orbs" instead of "Orbs:")
+        const cleanComponentPath = componentPath.replace(/:$/, '')
+        url.searchParams.set('component', cleanComponentPath)
+      } else {
+        url.searchParams.delete('component')
+      }
+
+      // Add page parameter if not on first page
+      if (page && page > 0) {
+        url.searchParams.set('page', page + 1) // Display 1-based page numbers in URL
+      } else {
+        url.searchParams.delete('page') // Remove page param for first page
+      }
+
+      window.history.pushState({}, '', url)
+    }
+
+    async function readSearchStateFromUrl () {
+      const urlParams = new URLSearchParams(window.location.search)
+      const queryParam = urlParams.get('q')
+      const pageParam = urlParams.get('page')
+      let componentParam = urlParams.get('component')
+
+      if (queryParam && queryParam.length >= MIN_QUERY_LENGTH) {
+        // Set the query variable
+        query = queryParam
+
+        // Normalize component parameter (handle both "Orbs" and "Orbs:" formats)
+        // Try with trailing colon first, then without, to match actual component paths
+        if (componentParam && componentParam !== 'All') {
+          // Component paths may have format "component:version" or "component:"
+          // URL has clean format "component" or "component:version"
+          // Add trailing colon if component has no version separator
+          if (!componentParam.includes(':')) {
+            componentParam = componentParam + ':'
+          }
+        }
+
+        // Parse page number (convert from 1-based to 0-based)
+        const pageNumber = pageParam ? parseInt(pageParam, 10) - 1 : 0
+        if (pageNumber > 0) {
+          paginationData = { page: pageNumber }
+        }
+
+        // Populate both search inputs
+        elements.searchInput.value = queryParam
+        if (elements.mobileSearchInput) {
+          elements.mobileSearchInput.value = queryParam
+        }
+
+        // Hide keyboard shortcut since input has text
+        updateKeyboardShortcutVisibility()
+
+        // Perform search without updating URL (since we're loading from URL)
+        await search(queryParam, componentParam, true)
+
+        // Show search results in appropriate container
+        if (isMobileView) {
+          showMobileSearchResults()
+        } else {
+          elements.searchContainer.classList.remove('hidden')
+          elements.header.classList.add('h-dvh')
+          if (elements.componentExplorerNav) elements.componentExplorerNav.classList.add('hidden')
+          elements.clearButton.classList.remove('hidden')
+          elements.clearButton.classList.add('flex')
+        }
+      } else {
+        // No query in URL, make sure search UI is hidden
+        handleClearSearchUI()
+      }
+    }
+
+    function handleClearSearchUI () {
+      // Clear search inputs and state
+      query = ''
+      elements.searchInput.value = ''
+      if (elements.mobileSearchInput) elements.mobileSearchInput.value = ''
+
+      // Hide desktop search
+      elements.searchContainer.classList.add('hidden')
+      elements.header.classList.remove('h-dvh')
+      if (elements.componentExplorerNav) elements.componentExplorerNav.classList.remove('hidden')
+      elements.clearButton.classList.remove('flex')
+      elements.clearButton.classList.add('hidden')
+
+      hideMobileSearchResults()
+      if (elements.mobileAskAiButton) elements.mobileAskAiButton.classList.remove('hidden')
+
+      // Show keyboard shortcut since input is empty
+      updateKeyboardShortcutVisibility()
+    }
+
+    function handlePopState () {
+      // Browser back/forward button was clicked, re-read URL and update search
+      readSearchStateFromUrl()
+    }
+
+    // ===== KEYBOARD SHORTCUT HANDLER =====
+
+    function handleKeyboardShortcut (e) {
+      // Check for Cmd+/ (Mac) or Ctrl+/ (Windows/Linux)
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
+      const modifierKey = isMac ? e.metaKey : e.ctrlKey
+
+      if (modifierKey && e.key === '/') {
+        e.preventDefault()
+
+        // Focus the appropriate search input based on current view
+        if (isMobileView && elements.mobileSearchInput) {
+          elements.mobileSearchInput.focus()
+        } else {
+          elements.searchInput.focus()
+        }
+      }
+    }
+
+    function updateKeyboardShortcutVisibility () {
+      // Hide keyboard shortcut when input has focus or contains text
+      const shouldHide = document.activeElement === elements.searchInput ||
+                         elements.searchInput.value.length > 0
+
+      if (elements.keyboardShortcut) {
+        if (shouldHide) {
+          elements.keyboardShortcut.classList.add('hidden')
+        } else {
+          elements.keyboardShortcut.classList.remove('hidden')
+        }
+      }
+
+      // Handle mobile keyboard shortcut visibility
+      if (elements.mobileKeyboardShortcut && elements.mobileSearchInput) {
+        const shouldHideMobile = document.activeElement === elements.mobileSearchInput ||
+                                 elements.mobileSearchInput.value.length > 0
+        if (shouldHideMobile) {
+          elements.mobileKeyboardShortcut.classList.add('hidden')
+        } else {
+          elements.mobileKeyboardShortcut.classList.remove('hidden')
+        }
+      }
+    }
+
+    function initializeKeyboardShortcut () {
+      // Detect platform and update shortcut key text
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
+      const shortcutKey = isMac ? 'cmd' : 'ctrl'
+
+      // Update desktop shortcut text
+      if (elements.keyboardShortcut) {
+        const shortcutKeyElement = elements.keyboardShortcut.querySelector('[data-shortcut-key]')
+        if (shortcutKeyElement) {
+          shortcutKeyElement.textContent = shortcutKey
+        }
+      }
+
+      // Update mobile shortcut text if it exists
+      if (elements.mobileKeyboardShortcut) {
+        const mobileShortcutKeyElement = elements.mobileKeyboardShortcut.querySelector('[data-shortcut-key]')
+        if (mobileShortcutKeyElement) {
+          mobileShortcutKeyElement.textContent = shortcutKey
+        }
+      }
+
+      // Set initial visibility
+      updateKeyboardShortcutVisibility()
+    }
+
     // ===== INITIALIZATION =====
 
     function initializeEventListeners () {
       // Desktop search event listeners
       elements.searchInput.addEventListener('input', handleSearchInput)
+      elements.searchInput.addEventListener('focus', updateKeyboardShortcutVisibility)
+      elements.searchInput.addEventListener('blur', updateKeyboardShortcutVisibility)
       elements.clearButton.addEventListener('click', handleClearSearch)
       elements.prevButton.addEventListener('click', handlePrevPage)
       elements.nextButton.addEventListener('click', handleNextPage)
@@ -590,6 +782,8 @@
       // Mobile search event listeners (if elements exist)
       if (elements.mobileSearchInput) {
         elements.mobileSearchInput.addEventListener('input', handleSearchInput)
+        elements.mobileSearchInput.addEventListener('focus', updateKeyboardShortcutVisibility)
+        elements.mobileSearchInput.addEventListener('blur', updateKeyboardShortcutVisibility)
       }
       if (elements.mobileClearButton) {
         elements.mobileClearButton.addEventListener('click', handleClearSearch)
@@ -601,15 +795,20 @@
         elements.mobileNextButton.addEventListener('click', handleNextPage)
       }
 
+      // Listen for browser back/forward button navigation
+      window.addEventListener('popstate', handlePopState)
+
       // Listen for window resize to handle mobile/desktop transitions
       window.addEventListener('resize', updateSearchUIForScreenSize)
+
+      // Listen for keyboard shortcut (Cmd+/ or Ctrl+/)
+      document.addEventListener('keydown', handleKeyboardShortcut)
     }
 
     // Initialize everything
     initializeDomReferences()
+    initializeKeyboardShortcut()
     initializeEventListeners()
-    console.log('Search input initialized')
+    readSearchStateFromUrl()
   }
-
-  console.log('Search functionality initialized')
 })()

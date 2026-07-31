@@ -1,0 +1,78 @@
+= Release cycle and versioning policy
+:page-platform: Server 4.9, Server Admin
+:page-description: Learn about CircleCI Server 4.9 semantic versioning and release schedules.
+:experimental:
+
+CircleCI supports the two most recent versions of CircleCI Server at any time, whether the release is a minor or major version bump. For example, if 4.9 is the current release and 5.0 ships next, then 5.0 and 4.9 become the supported pair.
+
+CircleCI targets a six-month release cadence, though the exact timing varies. When a version ships, the older of the two currently supported versions reaches end of life.
+
+For example: if 4.8 and 4.9 are the supported pair and 4.10 ships, then 4.8 reaches end of life. The supported pair becomes 4.9 and 4.10.
+
+We use semantic versioning to identify releases and communicate the impact on your installation. We publish patch releases each month as needed for bugs and security fixes.
+
+[#semantic-versioning]
+== Semantic versioning
+Given a version number, MAJOR.MINOR.PATCH increment, use the:
+
+. MAJOR version when you make incompatible API changes.
+. MINOR version when you add functionality in a backwards-compatible manner.
+. PATCH version when you make backwards compatible bug fixes.
+
+Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
+
+[#release-schedule]
+== Release schedule
+We release patch fixes for bugs and security concerns each month. We release minor and major (feature) versions twice a year. Subscribe to the link:https://circleci.com/server/changelog/[change log] to stay up to date.
+
+[#end-of-support]
+== End of support
+With each minor or major release, in accordance with our link:https://circleci.com/legal/terms-of-service/[terms of service], we end support for previous versions of CircleCI Server. The following table provides dates for previously released versions.
+
+CAUTION: These dates (MM/DD/YYYY) are subject to change.
+
+[.table.table-striped]
+[cols=3*, options="header", stripes=even]
+|===
+| Version | Released | End of Support
+
+|4.9.x
+|12/09/2025
+|12/09/2026*
+
+|4.8.x
+|07/24/2025
+|05/20/2026
+
+|4.7.x
+|11/07/2024
+|02/09/2026
+
+|4.6.x
+|8/12/2024
+|07/24/2025
+
+|4.5.x
+|4/30/2024
+|4/30/2025
+
+|4.4.x
+|2/05/2024
+|2/28/2025
+
+|4.3.x
+|11/07/2023
+|11/30/2024
+
+|4.2.x
+|7/18/2023
+|7/31/2024
+
+|4.1.x
+|3/21/2023
+|3/31/2024
+
+|4.0.x
+|7/28/2022
+|7/31/2023
+|===

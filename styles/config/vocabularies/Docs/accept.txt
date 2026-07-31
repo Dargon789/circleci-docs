@@ -1,10 +1,12 @@
+\b[Gg]it[Hh]ub organization\b
+\b[Cc]ircle[cC][iI] organization\b
+\b[Bb]itbucket organization\b
 .circleci/config.yml
 [Aa]gentless
+[Aa]gentic
 [Aa]uditability
 [Aa]utoscalers?
 [Bb]ooleans?
-\b[Cc]onfig policies\b
-\b[Cc]onfig policy\b
 [Cc]ron
 [Ee]nterprise
 [Gg]it
@@ -56,6 +58,7 @@ AWS Certificate Manager
 AWS\sECR
 Azure
 Azure Container Registry
+[Bb]ackfilling
 backoff
 [Bb]anlist?
 Bash
@@ -63,6 +66,7 @@ Behat
 Bioconda
 Bitbucket
 \bBitbucket Cloud\b
+Bitnami
 [Bb]lobless
 [Bb]lockchain
 Braintrust
@@ -72,14 +76,17 @@ Buildah
 Buildkite
 Buildx
 Bundler
+[Cc]anonical(?:'s)?
 Capistrano
 Certbot
+Cest
 cgroup
 Chocolatey
 chruby
-CircleCI\b
-\bCircleCI cloud\b
-\bCircleCI server\b
+[Cc]hunk
+\bCircleCI\b
+\bCircleCI Cloud\b
+\bCircleCI Server\b
 \bcircleci\.com\b
 CI/CD
 CIDRs?
@@ -92,6 +99,7 @@ CLI
 Claude Code
 CMake
 CocoaPods
+Codeception
 Codecov
 CodeDeploy
 Coinbase
@@ -127,6 +135,7 @@ Docker\sHub
 Dockerfiles?
 dockerize
 [Dd]otfiles?
+ECMAscript
 [Ee]nablement
 EKS
 Elixir
@@ -142,10 +151,12 @@ FAQs?
 Fastfile
 Fastlane
 /bFastlane Match/b
-filename
+[Ff]ilename
+[Ff]ilepath
+Finout
 framebuffer
 frameit
-\bFree Plan\b
+[Ff]ree
 [Ff]ormatters?
 Gbps
 GCP
@@ -153,15 +164,19 @@ geckodriver
 Gemfile
 GitHub
 \bGitHub Checks\b
+\bGitHub Enterprise Server\b
+GitLab
 \bGitLab self-managed\b
 GKE
+GOAT
 \bGoogle Cloud\b
 \bGoogle Cloud Functions\b
 \bGoogle Cloud Platform\b
 \bGoogle Cloud Storage\b
 \bGoogle Container Registry\b
 \bGoogle Play Store\b
-GPU
+gotestsum
+GPUs?
 Gradle
 Grafana
 Gzip
@@ -179,6 +194,7 @@ IAM
 IdP
 [Ii]njectable
 [Ii]nsights
+inlines
 invocated
 iOS
 IP
@@ -189,6 +205,7 @@ Jenkins
 JFrog
 Jira
 jq\b
+JSON
 \bJUnit\b
 junit
 JRuby
@@ -204,6 +221,7 @@ Krew
 kubectl
 [Kk]ubelets?
 Kubernetes
+KubeVirt
 LambdaTest
 Lein
 Leiningen
@@ -220,6 +238,7 @@ MCP server
 MFEs?
 [Mm]iddleware
 minitest
+[Mm]isconfiguration
 [Mm]ultithreading
 [Mm]ultiline
 [Nn]amespaces?
@@ -237,15 +256,18 @@ Okta
 OOM
 OPA
 \bOpenID Connect\b
-orgs?
+[Oo]rgs?
 [Pp]ackagecloud
 [Pp]arameterization
 [Pp]arameterizable
+[Pp]arsable
 [Pp]assphraseless
-\bPerformance Plan\b
+[Pp]erformance
+pg_partman
 PHP
 PHPUnit
 Pipenv
+[Pp]laintext
 Playwright
 Podfile
 PostgreSQL
@@ -266,7 +288,7 @@ PowerShell
 [Pp]roxied
 [Pp]roxying
 Pusher
-PVC
+PVCs?
 Python
 pytest
 RAM
@@ -279,6 +301,7 @@ ReplicaSet
 [Rr]epos?
 [Rr]eprovision
 [Rr]eprovisioned
+[Rr]etrigger
 [Rr]eusability
 Restic
 RHEL
@@ -297,32 +320,38 @@ SAML
 SSO
 [Ss]afelist
 \bSauce Labs\b
-\bScale Plan\b
+[Ss]cale
+[Ss]chedulable
 SDK
 seccomp
 [Ss]ecrets?
 Selenium
 SemVer
-Server Plan
+[Ss]erver
 SELinux
+[Ss]erverless
 \b[Ss]hellchecking\b
 [Ss]harded
 \b[Ss]ingle sign-on\b
 SLAs?
+SLOs?
 Slanger
 [Ss]ignup
 SKUs?
+Smarter Testing
 [Ss]nap
 SSH
 statsd
 stderr
 stdin
 [Ss]tdout
+[Ss]treamable
 [Ss]ubkeys?
 [Ss]ubshells?
 [Ss]ubcommands?
 [Ss]ubnets?
 [Ss]ubnetworks?
+[Ss]ubpackage
 superset
 Sysbox
 systemd
@@ -336,6 +365,9 @@ Telegraf
 Terraform
 TestFairy
 \btime windows\b
+[Tt]imebox
+[Tt]imeboxing
+Tini
 Tink
 Tinkey
 TLS
@@ -366,10 +398,13 @@ URLEncoder
 UUID
 UUIDs?
 [Vv]alidator
+values.yaml
+vCPUs?
 VCS
 Velero
 Viget
 [Vv]irtualized
+Vitest
 VMs?
 VPC
 \bVisual Studio\b
@@ -388,3 +423,9 @@ XCTest
 XQuartz
 Xvfb
 YAML
+Zstd
+LangSmith
+[Tt]estsuite
+containerDisk
+routable
+DMs

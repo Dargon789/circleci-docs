@@ -1,0 +1,87 @@
+= Getting started with Smarter Testing
+:page-description: Install and configure Smarter Testing for your project
+:page-badge: Beta
+:page-platform: Cloud
+:experimental:
+:page-show-readtime: true
+
+include::ROOT:partial$notes/smarter-testing-beta.adoc[]
+
+Smarter Testing reduces test execution time while maintaining test confidence. It provides three independent features you can enable incrementally:
+
+* *Test impact analysis* -- run only the tests impacted by your code changes.
+* *Dynamic test splitting* -- evenly distribute tests across parallel execution nodes.
+* *Auto rerun failed tests* -- automatically retry failed tests.
+
+This guide walks you through the foundational setup that all three features build on:
+
+. Configure a `.circleci/test-suites.yml` file to discover and run your tests.
+. Validate and run your tests using the `testsuite` command.
+
+== Before you begin
+
+* You need to install the link:https://cli.circleci.com/[latest CircleCI CLI, window=_blank]. If you have the previous stable version installed you will need to link:https://github.com/CircleCI-Public/circleci-cli#preview-installation[uninstall it first, window=_blank].
+* You need a repository with an existing test suite. The following setup process guides you through configuring JUnit XML output and installing the CLI `testsuite` plugin.
+
+NOTE: You can complete step 1 (configure and validate locally) without a CircleCI account. A CircleCI account with a project connected to your VCS is only required for step 2, when you run tests in CI.
+
+=== Terminology
+
+The following terms are used throughout the Smarter Testing documentation:
+
+Test atom:: The smallest unit of work your test runner can execute independently - typically a test file (for example, `tests/auth_test.py`), but can also be a test package or module.
+Test suite:: A named configuration in `.circleci/test-suites.yml` that defines how to discover and run your test atoms.
+
+== 1. Validate and run locally
+
+Use the `doctor` command to set up and validate your `test-suites.yml`. The CLI runs through a series of checks, executing tests and validating the output. If any results look incorrect, action items are provided to resolve them.
+
+[source,console]
+----
+$ circleci testsuite doctor "ci tests"
+----
+
+Follow the steps until all checks pass.
+
+include::ROOT:partial$tips/testsuite-working-directory.adoc[]
+
+== 2. Run in CI
+
+In your CircleCI configuration file, replace your existing test command with `circleci testsuite run "ci tests"` -- the same command you used locally. Keep all other job steps the same.
+
+Verify that `store_test_results` points to the directory that matches `outputs.junit` in your `test-suites.yml` file.
+
+.Example CircleCI test job configuration with the testsuite command
+[source,yaml]
+----
+version: 2.1
+jobs:
+  test:
+    executor: node-with-service
+    steps:
+      - setup
+      # Replace previous tests command e.g. vitest run --reporter=junit ...
+      - run: circleci testsuite run "ci tests"
+      - store_test_results:
+          # This directory must match the directory of `outputs.junit` in your
+          # test-suites.yml
+          path: test-reports
+----
+
+Commit both `.circleci/test-suites.yml` and `.circleci/config.yml` to your feature branch and push to your VCS.
+
+=== Verify in CI
+
+After your pipeline runs, verify the test job behaves as expected before merging:
+
+. In the CircleCI web app, navigate to your pipeline and open the test job.
+. Check the *Tests* tab and confirm the number of test results matches what you see when running tests without the `testsuite` command. A difference in test results could indicate a misconfiguration in your `discover` command.
+. Compare the job duration to a recent run without the `testsuite` command. The runtime is expected to be similar. A significant difference may indicate a misconfiguration in your `test-suites.yml`.
+
+== Next steps
+
+All of your tests now run locally and in CI using the `testsuite` command. Next, enable the Smarter Testing features that fit your needs. Each feature can be enabled independently:
+
+* xref:set-up-test-impact-analysis.adoc[Set up Test Impact Analysis] to run only impacted tests based on code changes.
+* xref:use-dynamic-test-splitting.adoc[Use Dynamic Test Splitting] to evenly split tests across parallel nodes.
+* xref:auto-rerun-failed-tests.adoc[Auto Rerun Failed Tests] to automatically retry flaky tests.

@@ -1,6 +1,6 @@
 = Self-hosted runner feature comparison
 :page-platform: Cloud, Server v4+
-:description: A comparison table of the features available for CircleCI runners.
+:page-description: A comparison table of the features available for CircleCI runners.
 :experimental:
 
 This page offers a comparison of the features available for CircleCI machine runner vs. CircleCI container runner.
@@ -8,6 +8,8 @@ This page offers a comparison of the features available for CircleCI machine run
 [#feature-comparison-matrix]
 == Comparison matrix
 
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
 |Feature
@@ -58,13 +60,14 @@ This page offers a comparison of the features available for CircleCI machine run
 |*Docker Support*
 |How Docker-in-Docker is handled
 |Native OS support
-|Possible xref:container-runner.adoc#building-container-images[with third-party tools]
+|Possible with xref:container-runner.adoc#building-container-images[Third-Party Tools]
 
 |*Resource Cleanup*
 |How build environments are cleaned after jobs
 |Working directory cleanup
 |Container lifecycle
 |===
+--
 
 
 [#feature-highlights]
@@ -75,7 +78,7 @@ This page offers a comparison of the features available for CircleCI machine run
 * Latest generation of machine-based runners.
 * Full access to underlying operating system.
 * Ideal for workflows requiring VM-level isolation.
-* Consistent xref:reference:ROOT:variables.adoc#built-in-environment-variables[environment variables] with `CIRCLECI_RUNNER_*` prefix.
+* Consistent xref:reference:ROOT:variables.adoc#built-in-environment-variables[Environment Variables] with `CIRCLECI_RUNNER_*` prefix.
 * Supports SSH connectivity for debugging.
 
 *Container Runner*
@@ -87,7 +90,7 @@ This page offers a comparison of the features available for CircleCI machine run
 * Custom security contexts and volume mounting.
 * Support for spot instances via tolerations.
 * Configurable resource limits for primary and service containers.
-* Supports SSH connectivity for debugging - xref:container-runner-installation.adoc#enable-rerun-job-with-ssh[Open preview].
+* Supports SSH connectivity for debugging - xref:container-runner-installation.adoc#enable-rerun-job-with-ssh[Open Preview].
 
 [#key-differences]
 == Key differences

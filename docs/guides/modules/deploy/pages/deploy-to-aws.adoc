@@ -1,6 +1,6 @@
 = Deploy to AWS
 :page-platform: Cloud, Server v4+
-:page-description: This is document provides examples of deploying to Amazon Web Services.
+:page-description: This document provides examples of deploying to Amazon Web Services.
 :experimental:
 
 In this how-to guide, you will learn how to configure CircleCI to deploy to Amazon Web Services.
@@ -54,9 +54,7 @@ workflows: # Define a Workflow running the build job, then the deploy job
       - deploy:
           requires:
             - build # Only run deploy job once the build job has completed
-          filters:
-            branches:
-              only: main # Only deploy when the commit is on the Main branch
+          filters: pipeline.git.branch == "main" # only run the deploy job on the main branch
 
 jobs: # Define the build and deploy jobs
   build:
@@ -117,9 +115,7 @@ workflows: # Define a Workflow running the build job, then the deploy job
         - deploy:
             requires:
             - build
-            filters:
-            branches:
-                only: main # Only deploys when the commit is on the Main branch
+            filters: pipeline.git.branch == "main" # only run the deploy job on the main branch
 
 jobs:
     build:
@@ -214,3 +210,16 @@ workflows:
 == AWS CodeDeploy
 
 The link:https://circleci.com/developer/orbs/orb/circleci/aws-code-deploy[AWS CodeDeploy] orb enables you to run deployments through AWS CodeDeploy. See the example in the developer hub to get started.
+
+[#track-deployments-with-deploy-markers]
+== Track your deployments with deploy markers
+
+Deploy markers provide a way to track and manage your AWS deployments in the CircleCI web app. Deploy markers work with all AWS deployment types including S3, ECR, ECS, and CodeDeploy. When you add deploy markers to your deployment job, you can view a timeline of all deployments, track their status, and enable rollback and deploy pipelines.
+
+You have two options for setting up deploy markers:
+
+* *In-app setup*: Use the guided setup in the CircleCI web app when configuring a xref:set-up-rollbacks.adoc[Rollback Pipeline] or xref:set-up-deploys.adoc[Deploy Pipeline]. The setup will walk you through adding deploy markers to your configuration. If you are using GitHub and have the CircleCI GitHub App installed, you can use AI to generate the deploy marker configuration automatically.
+
+* *Manual setup*: Add deploy marker commands directly to your `.circleci/config.yml` file by following the xref:configure-deploy-markers.adoc[Configure Deploy Markers] guide.
+
+Both approaches will enable you to track deployment history and manage rollbacks directly from the CircleCI web app.

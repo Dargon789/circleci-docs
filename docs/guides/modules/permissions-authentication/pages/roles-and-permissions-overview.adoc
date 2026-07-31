@@ -1,26 +1,30 @@
 = Roles and permissions
 :page-platform: Cloud
-:page-description: An overview of the various project and orgnization roles in CircleCI and the permissions associated with each role.
+:page-description: An overview of the various project and organization roles in CircleCI and the permissions associated with each role.
 :experimental:
 
-NOTE: If you authenticated your CircleCI account with xref:integration:gitlab-integration.adoc[GitLab] or the CircleCI xref:integration:github-apps-integration.adoc[GitHub App], the content on this page applies to you.
+If you have a `circleci` type organization, the content on this page applies to you.
 
-Manage user access to organizations and projects with CircleCI roles and associated permissions. By default, users can access projects based on roles set at an organization level. For more granular control, you can assign roles at the project level. Manage roles for groups of users with xref:manage-groups.adoc[groups].
+include::ROOT:partial$tips/check-org-type.adoc[]
+
+Manage user access to organizations and projects with CircleCI roles and associated permissions. By default, users can access projects based on roles set at an organization level. For more granular control, you can assign roles at the project level. Manage roles for groups of users with xref:manage-groups.adoc[Groups].
 
 [#quickstart]
 == Quickstart
 
-For instructions on managing roles and permissions, see the xref:manage-roles-and-permissions.adoc[Manage roles and permissions] page. For more information on managing project roles for groups of users, see the xref:manage-groups.adoc[manage-groups] page.
+For instructions on managing roles and permissions, see the xref:manage-roles-and-permissions.adoc[Manage Roles and Permissions] page. For more information on managing project roles for groups of users, see the xref:manage-groups.adoc[Manage Groups] page.
 
 [#organization-role-permissions-matrix]
 == Organization role permissions matrix
 
 The table below shows the permissions associated with each CircleCI organization role:
 
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| ORGANIZATION ROLES
+| Actions
+3+^| Organization roles
 
 | *Organization*
 ^| *Admin*
@@ -112,11 +116,14 @@ The table below shows the permissions associated with each CircleCI organization
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
 |===
+--
 
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| ORGANIZATION ROLES
+| Actions
+3+^| Organization roles
 
 | *Insights*
 ^| *Admin*
@@ -127,12 +134,16 @@ The table below shows the permissions associated with each CircleCI organization
 ^| [.circle-green]#**Yes**#
 ^| [.circle-green]#**Yes**#
 ^| [.circle-green]#**Yes**#
-|===
 
+|===
+--
+
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| ORGANIZATION ROLES
+| Actions
+3+^| Organization roles
 
 | *Runner*
 ^| *Admin*
@@ -148,12 +159,17 @@ The table below shows the permissions associated with each CircleCI organization
 ^| [.circle-green]#**Yes**#
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
-|===
 
+|===
+--
+
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| ORGANIZATION ROLES
+
+| Actions
+3+^| Organization roles
 
 | *Projects*
 ^| *Admin*
@@ -174,12 +190,16 @@ The table below shows the permissions associated with each CircleCI organization
 ^| [.circle-green]#**Yes**#
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
-|===
 
+|===
+--
+
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| ORGANIZATION ROLES
+| Actions
+3+^| Organization roles
 
 | *Contexts*
 ^| *Admin*
@@ -201,16 +221,31 @@ The table below shows the permissions associated with each CircleCI organization
 ^| [.circle-green]#**Yes**#
 ^| [.circle-red]#**No**#
 
-| Manage contexts
+| Create contexts
 ^| [.circle-green]#**Yes**#
 ^| [.circle-green]#**Yes**#
 ^| [.circle-red]#**No**#
-|===
 
+| Delete contexts
+^| [.circle-green]#**Yes**#
+^| [.circle-green]#**Yes**#
+^| [.circle-red]#**No**#
+
+| Apply context restrictions (project and expression)
+^| [.circle-green]#**Yes**#
+^| [.circle-red]#**No**#
+^| [.circle-red]#**No**#
+
+|===
+--
+
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| ORGANIZATION ROLES
+
+| Actions
+3+^| Organization roles
 
 | *Orbs*
 ^| *Admin*
@@ -236,12 +271,16 @@ The table below shows the permissions associated with each CircleCI organization
 ^| [.circle-green]#**Yes**#
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
-|===
 
+|===
+--
+
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| ORGANIZATION ROLES
+| Actions
+3+^| Organization roles
 
 | *Webhooks*
 ^| *Admin*
@@ -267,12 +306,17 @@ The table below shows the permissions associated with each CircleCI organization
 ^| [.circle-green]#**Yes**#
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
-|===
 
+|===
+--
+
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| ORGANIZATION ROLES
+
+| Actions
+3+^| Organization roles
 
 | *Schedule*
 ^| *Admin*
@@ -288,12 +332,17 @@ The table below shows the permissions associated with each CircleCI organization
 ^| [.circle-green]#**Yes**#
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
-|===
 
+|===
+--
+
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| ORGANIZATION ROLES
+
+| Actions
+3+^| Organization roles
 
 |*Triggers*
 ^| *Admin*
@@ -314,12 +363,17 @@ The table below shows the permissions associated with each CircleCI organization
 ^| [.circle-green]#**Yes**#
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
-|===
 
+|===
+--
+
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| ORGANIZATION ROLES
+
+| Actions
+3+^| Organization roles
 
 |*Pipelines*
 ^| *Admin*
@@ -335,12 +389,16 @@ The table below shows the permissions associated with each CircleCI organization
 ^| [.circle-green]#**Yes**#
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
-|===
 
+|===
+--
+
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| ORGANIZATION ROLES
+| Actions
+3+^| Organization roles
 
 |*Releases*
 ^| *Admin*
@@ -386,7 +444,9 @@ The table below shows the permissions associated with each CircleCI organization
 ^| [.circle-green]#**Yes**#
 ^| [.circle-green]#**Yes**#
 ^| [.circle-green]#**Yes**#
+
 |===
+--
 
 
 [#project-role-permissions-matrix]
@@ -394,10 +454,13 @@ The table below shows the permissions associated with each CircleCI organization
 
 The table below shows the permissions associated with each CircleCI project role:
 
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| PROJECT ROLES
+
+| Actions
+3+^| Project roles
 
 | *Projects*
 ^| *Admin*
@@ -428,12 +491,17 @@ The table below shows the permissions associated with each CircleCI project role
 ^| [.circle-green]#**Yes**#
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
-|===
 
+|===
+--
+
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| PROJECT ROLES
+
+| Actions
+3+^| Project roles
 
 | *Webhooks*
 ^| *Admin*
@@ -449,12 +517,17 @@ The table below shows the permissions associated with each CircleCI project role
 ^| [.circle-green]#**Yes**#
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
-|===
 
+|===
+--
+
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| PROJECT ROLES
+
+| Actions
+3+^| Project roles
 
 | *Schedule*
 ^| *Admin*
@@ -470,12 +543,17 @@ The table below shows the permissions associated with each CircleCI project role
 ^| [.circle-green]#**Yes**#
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
-|===
 
+|===
+--
+
+
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| PROJECT ROLES
+| Actions
+3+^| Project roles
 
 | *Triggers*
 ^| *Admin*
@@ -496,12 +574,16 @@ The table below shows the permissions associated with each CircleCI project role
 ^| [.circle-green]#**Yes**#
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
-|===
 
+|===
+--
+
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| PROJECT ROLES
+| Actions
+3+^| Project roles
 
 | *Contexts*
 ^| *Admin*
@@ -523,17 +605,31 @@ The table below shows the permissions associated with each CircleCI project role
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
 
-| Manage contexts
+| Create contexts
+^| [.circle-red]#**No**#
+^| [.circle-red]#**No**#
+^| [.circle-red]#**No**#
+
+| Delete contexts
+^| [.circle-red]#**No**#
+^| [.circle-red]#**No**#
+^| [.circle-red]#**No**#
+
+| Apply context restrictions (project and expression)
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
 
 |===
+--
 
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| PROJECT ROLES
+
+| Actions
+3+^| Project roles
 
 | *Pipelines*
 ^| *Admin*
@@ -549,12 +645,16 @@ The table below shows the permissions associated with each CircleCI project role
 ^| [.circle-green]#**Yes**#
 ^| [.circle-red]#**No**#
 ^| [.circle-red]#**No**#
-|===
 
+|===
+--
+
+[.table-scroll]
+--
 [cols=4*, options="header"]
 |===
-| ACTIONS
-3+^| PROJECT ROLES
+| Actions
+3+^| Project roles
 
 | *Releases*
 ^| *Admin*
@@ -592,6 +692,7 @@ The table below shows the permissions associated with each CircleCI project role
 ^| [.circle-red]#**No**#
 
 |===
+--
 
 [#permissions-scope]
 == Permissions scope
@@ -603,9 +704,9 @@ For example, you may be an _Organization Administrator_ within CircleCI, which g
 [#role-hierarchy]
 == Role hierarchy across groups and individuals
 
-Users can have roles assigned to them both individually and as part of a xref:manage-groups.adoc[group]. The _highest_ role always applies. For example, if a user has the role of **admin** assigned for a project, and that user is also part of a group with the role of **contributor** for the project, the user will still have **admin** permissions for the project.
+Users can have roles assigned to them both individually and as part of a xref:manage-groups.adoc[Group]. The _highest_ role always applies. For example, a user may have the role of **admin** assigned for a project. If that user is also part of a group with the role of **contributor** for the project, the user will have **admin** permissions for the project.
 
 [#next-steps]
 == Next steps
 
-* xref:manage-roles-and-permissions.adoc[Manage roles and permissions]
+* xref:manage-roles-and-permissions.adoc[Manage Roles and Permissions]

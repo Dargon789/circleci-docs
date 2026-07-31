@@ -3,7 +3,7 @@
 :page-description: Open preview of config policies for CircleCI. Reference page for function helpers.
 :experimental:
 
-NOTE: The config policies feature is available on the **Scale** Plan and from CircleCI server v4.2. You must be an organization admin in order to create and manage config policies.
+NOTE: The config policies feature is available on the **Scale** Plan and from CircleCI Server v4.2. You must be an organization admin in order to create and manage config policies.
 
 This reference page lists a selection of _helpers_, or CircleCI-specific functions that are likely to be useful for you when you are writing your policies. These helpers will lead to _cleaner_ policies with less boilerplate.
 
@@ -26,7 +26,7 @@ can be utilized by policies related to orbs.
 [#definition-orbs]
 ==== Definition
 
-[source,rego]
+[source,go]
 ----
 orbs[string] = string
 ----
@@ -44,7 +44,7 @@ Example `orbs` object:
 [#usage-orbs]
 ==== Usage
 
-[source,rego]
+[source,go]
 ----
 package org
 
@@ -58,13 +58,12 @@ my_orbs := config.orbs
 [#ban-orbs]
 === `ban_orbs`
 
-This function violates a policy if a config includes orbs based on the orb name. Versions should not
-be included in the provided list of orbs.
+This function violates a policy if a config includes orbs based on the orb name. Versions must not be included in the provided list of orbs.
 
 [#definition-ban-orbs]
 ==== Definition
 
-[source,rego]
+[source,go]
 ----
 ban_orbs([string])
 returns { string: string }
@@ -73,7 +72,7 @@ returns { string: string }
 [#usage-ban-orbs]
 ==== Usage
 
-[source,rego]
+[source,go]
 ----
 package org
 
@@ -94,7 +93,7 @@ This function violates a policy if a config includes orbs based on the orb name 
 [#definition-ban-orbs-version]
 ==== Definition
 
-[source,rego]
+[source,go]
 ----
 ban_orbs_version([string])
 returns { string: string }
@@ -103,7 +102,7 @@ returns { string: string }
 [#usage-ban-orbs-version]
 ==== Usage
 
-[source,rego]
+[source,go]
 ----
 package org
 
@@ -126,7 +125,7 @@ still be available for use by any project.
 [#definition-resource-class-by-project]
 ==== Definition
 
-```rego
+```go
 resource_class_by_project({
   "$RESOURCE_CLASS": {$PROJECT_IDS...},
   ...
@@ -137,7 +136,7 @@ returns { ...reasons: string }
 [#usage-resource-class-by-project]
 ==== Usage
 
-[source,rego]
+[source,go]
 ----
 package org
 
@@ -168,19 +167,19 @@ It prevents the usage of **any** context **not in** `ALLOWED_CONTEXTS` for **all
 [#definition-contexts-allowed-by-project-ids]
 ==== Definition
 
-[source,rego]
+[source,go]
 ----
 contexts_allowed_by_project_ids(
   PROJECTS: string | Array<string> | Set<string>
   ALLOWED_CONTEXTS: string | Array<string> | Set<string>
 )
-returns reason <type string>
+returns reason: string
 ----
 
 [#usage-contexts-allowed-by-project-ids]
 ==== Usage
 
-[source,rego]
+[source,go]
 ----
 package org
 
@@ -212,7 +211,7 @@ It blocks the usage of **any** context **in** `BLOCKED_CONTEXTS` for **all** pro
 [#definition-contexts-blocked-by-project-ids]
 ==== Definition
 
-[source,rego]
+[source,go]
 ----
 contexts_blocked_by_project_ids(
   PROJECTS: string | Array<string> | Set<string>
@@ -224,7 +223,7 @@ returns reason: string
 [#usage-contexts-blocked-by-project-ids]
 ==== Usage
 
-[source,rego]
+[source,go]
 ----
 package org
 
@@ -250,14 +249,14 @@ context names (`RESERVED_CONTEXTS`) as one of the following types:
 
 * string
 * set of strings
-* array-of-strings
+* array of strings
 
 It blocks the usage of **any** context **in** `RESERVED_CONTEXTS` for **all** projects **not in** `PROJECTS`.
 
 [#definition-contexts-reserved-by-project-ids]
 ==== Definition
 
-[source,rego]
+[source,go]
 ----
 contexts_reserved_by_project_ids(
   PROJECTS: string | Array<string> | Set<string>
@@ -269,7 +268,7 @@ returns reason: string
 [#usage-contexts-reserved-by-project-ids]
 ==== Usage
 
-[source,rego]
+[source,go]
 ----
 package org
 
@@ -294,15 +293,15 @@ This function accepts VCS branch names (`BRANCHES`) and
 context names (`RESERVED_CONTEXTS`) as one of the following types:
 
 * string
-* set-of-strings
-* array-of-strings
+* set of strings
+* array of strings
 
 Branch names **not in** `BRANCHES` are **not** allowed to use the contexts **in** `RESERVED_CONTEXTS`, however, other contexts may be used.
 
 [#definition-contexts-reserved-by-branches]
 ==== Definition
 
-[source,rego]
+[source,go]
 ----
 contexts_reserved_by_branches(
   BRANCHES: string | Array<string> | Set<string>
@@ -314,7 +313,7 @@ returns reason: string
 [#usage-contexts-reserved-by-branches]
 ==== Usage
 
-[source,rego]
+[source,go]
 ----
 package org
 
@@ -324,8 +323,8 @@ import data.circleci.config
 policy_name["a_unique_policy_name"]
 
 rule_contexts_reserved_by_branches = config.contexts_reserved_by_branches(
-   ["${BRANCH_1}, "${BRANCH_2}", "${BRANCH_3}"]",
-  ["${RESERVED_CONTEXT_1}","${RESERVED_CONTEXT_2}"]
+   ["${BRANCH_1}", "${BRANCH_2}", "${BRANCH_3}"],
+   ["${RESERVED_CONTEXT_1}","${RESERVED_CONTEXT_2}"]
 )
 
 enable_hard["rule_contexts_reserved_by_branches"]
@@ -344,7 +343,7 @@ This function checks any value and returns true if it is a string that contains 
 [#definition-is-parameterized-expression]
 ==== Definition
 
-[source,rego]
+[source,go]
 ----
 is_parameterized_expression(value)
 return boolean
@@ -353,7 +352,7 @@ return boolean
 [#usage-is-parameterized-expression]
 ==== Usage
 
-[source,rego]
+[source,go]
 ----
 is_parameterized_expression("hello world")                      # false
 is_parameterized_expression(42)                                 # false
@@ -370,7 +369,7 @@ This function retrieves the name of an element in a config file. You can use it 
 [#definition-get-element-name]
 ==== Definition
 
-[source,rego]
+[source,go]
 ----
 get_element_name(input.<config_key>)
 returns string
@@ -379,7 +378,7 @@ returns string
 [#usage-get-element-name]
 ==== Usage
 
-[source,rego]
+[source,go]
 ----
 package org
 
@@ -411,7 +410,7 @@ This function casts a value to an array. Array values are left as is and are **n
 [#definition-to-array]
 ==== Definition
 
-[source,rego]
+[source,go]
 ----
 to_array(value)
 returns array
@@ -420,7 +419,7 @@ returns array
 [#usage-to-array]
 ==== Usage
 
-[source,rego]
+[source,go]
 ----
 package org
 
@@ -440,7 +439,7 @@ This function casts a value to a set. Array values are cast to a set and dedupli
 [#definition-to-set]
 ==== Definition
 
-[source,rego]
+[source,go]
 ----
 to_set(value)
 returns set
@@ -449,7 +448,7 @@ returns set
 [#usage-to-set]
 ==== Usage
 
-[source,rego]
+[source,go]
 ----
 package org
 
