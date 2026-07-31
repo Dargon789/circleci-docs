@@ -7,28 +7,40 @@
   padding: 0 1rem 4rem;
 }
 
-@media screen and (max-width: 1023.5px) {
-  .doc {
-    padding: 0 32px 4rem;
-  }
-}
+/* Below the 1200px sidebar-TOC reflow (mobile + tablet) there is no TOC beside
+   the article, so the article is a centered column — capped at the same width it
+   uses on desktop and centred via the base `margin: 0 auto` — with wider side
+   padding. The breadcrumb toolbar is centred to the same column in
+   article-toolbar.hbs so their left edges line up.
 
-@media screen and (min-width: 1024px) {
+   width:100% + min-width:0 are required because .doc is a flex item and the base
+   `margin: 0 auto` gives it auto cross-axis margins. Auto margins make a flex
+   item size to its content (capped at max-width), so wide content (long code
+   lines, wide tables) would push it out to the 888px max-width even on a phone,
+   overflowing the page horizontally. width:100% sizes it to the container instead
+   (still capped/centred by max-width), and min-width:0 lets wide children be
+   clipped/scrolled inside the article rather than widening it. */
+@media screen and (max-width: 1199.5px) {
   .doc {
-    flex: auto;
-    font-size: var(--doc-font-size--desktop);
-    margin: var(--doc-margin--desktop);
-    max-width: var(--doc-max-width--desktop);
+    width: 100%;
     min-width: 0;
+    max-width: var(--doc-max-width--desktop);
+    padding: 0 var(--doc-padding-x) 4rem;
   }
 }
 
-/* Apply aggressive flexbox fix only above 1200px where the original problem occurs */
+/* The article column only narrows for the TOC at 1200px, where the sidebar TOC
+   actually appears (see main.css). Below that — the entire tablet range — the
+   article stays full-width, so there is no capped column with an empty gutter
+   where the TOC will later sit. Previously this block fired at 1024px, 176px
+   before the TOC arrived, which left that dead gutter on the right. */
 @media screen and (min-width: 1200px) {
   .doc {
     flex: 1 1 0%;
     width: 0; /* Force flexbox to ignore content width */
-    max-width: var(--doc-max-width--desktop); /* Restore max-width for centering */
+    margin: var(--doc-margin--desktop);
+    max-width: var(--doc-max-width--desktop);
+    min-width: 0;
     transition: max-width 0.3s ease;
   }
 }
@@ -61,7 +73,11 @@
   margin: 16px 0;
   padding: 0;
   text-align: left;
-  scroll-margin-top: calc(var(--navbar-height) + var(--toolbar-height) + 1rem);
+  scroll-margin-top: calc(var(--header-height) + 1.5rem); /* No-JS fallback for anchor jumps; the active offset is set in js/03-fragment-jumper.js (HEADER_GAP). Keep the gap in sync (1.5rem = 24px). */
+  /* Flex layout for badge vertical alignment */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .doc h1 {
@@ -85,10 +101,19 @@
   font-size: 16px;
 }
 
-/* Mobile heading sizes */
-@media screen and (max-width: 1023.5px) {
+/* Mobile heading sizes (below the tablet breakpoint). The 767.5px boundary keeps
+   the whole type scale switching at one place; the root is a uniform 16px across
+   breakpoints (see base.css). */
+@media screen and (max-width: 767.5px) {
   .doc h1 {
     font-size: 24px;
+  }
+
+  /* Gives the breadcrumbs→title gap on mobile, matching the tablet/desktop rule.
+     Uses the same --rem-base calc as the ≥768 rule; with the 16px root and
+     --rem-base:16 this resolves to a true 40px. */
+  .doc h1.page {
+    margin-top: calc(40 / var(--rem-base) * 1rem);
   }
 
   .doc h2 {
@@ -184,7 +209,7 @@
 }
 
 .doc a:hover {
-  color: var(--link_hover-font-color);
+  color: var(--link-hover-font-color);
 }
 
 .doc a.bare {
@@ -192,7 +217,7 @@
 }
 
 .doc a.unresolved {
-  color: var(--link_unresolved-font-color);
+  color: var(--link-unresolved-font-color);
 }
 
 .doc i.fa {
@@ -215,11 +240,11 @@
 .doc .colist > table code,
 .doc .admonitionblock td.content code:not(.hljs) {
   color: var(--code-font-color);
-  background: #F7F7F7;
+  background: var(--inline-code-background);
   border-radius: 4px;
-  border: 1px solid #D4D4D4;
+  border: 1px solid var(--inline-code-border-color);
   font-size: 0.95em;
-  padding: 0.15em 0.4em;
+  padding: 2px 8px;
 }
 
 .doc code,
@@ -248,7 +273,7 @@
   height: auto;
   margin: 0 0 1rem 1rem;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--image-shadow);
   overflow: hidden;
 }
 
@@ -350,7 +375,7 @@
   border-spacing: 0;
   display: table;
   margin-bottom: 1rem;
-  border: 1px solid #D4D4D4;
+  border: 1px solid var(--table-border-color);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -368,12 +393,12 @@
 .doc table.tableblock th {
   box-sizing: border-box;
   white-space: normal;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   hyphens: manual;
 }
 
 .doc td.tableblock > .content {
-  word-wrap: anywhere; /* aka overflow-wrap; used when hyphens are disabled or aren't sufficient */
+  overflow-wrap: anywhere; /* aka overflow-wrap; used when hyphens are disabled or aren't sufficient */
 }
 
 .doc td.tableblock > .content > :first-child {
@@ -383,7 +408,7 @@
 .doc table.tableblock th,
 .doc table.tableblock td {
   padding: 1rem;
-  border-bottom: 1px solid #D4D4D4;
+  border-bottom: 1px solid var(--table-border-color);
   min-width: 100px;
 }
 
@@ -397,7 +422,7 @@
 
 .doc table.tableblock,
 .doc table.tableblock > * > tr:last-child > * {
-  border-bottom: 1px solid #D4D4D4;
+  border-bottom: 1px solid var(--table-border-color);
 }
 
 .doc .table-scroll {
@@ -412,7 +437,7 @@
 
 .doc table.grid-all > * > tr > * {
   border-width: 0;
-  border-bottom: 1px solid #D4D4D4;
+  border-bottom: 1px solid var(--table-border-color);
 }
 
 .doc table.grid-cols > * > tr > * {
@@ -421,7 +446,7 @@
 
 .doc table.grid-rows > * > tr > * {
   border-width: 0;
-  border-bottom: 1px solid #D4D4D4;
+  border-bottom: 1px solid var(--table-border-color);
 }
 
 .doc table.grid-all > thead th,
@@ -479,11 +504,11 @@
 }
 
 .doc table.tableblock > tbody > tr:nth-of-type(odd) {
-  background: white;
+  background: var(--table-stripe-odd);
 }
 
 .doc table.tableblock > tbody > tr:nth-of-type(even) {
-  background: #FAFAFA;
+  background: var(--table-stripe-even);
 }
 
 .doc table.stripes-hover > tbody > tr:hover {
@@ -492,8 +517,8 @@
 
 .doc table.tableblock > thead > tr > th {
   font-weight: bold;
-  border-bottom: 2px solid #D4D4D4;
-  background-color: #FAFAFA;
+  border-bottom: 2px solid var(--table-border-color);
+  background-color: var(--table-header-background);
 }
 
 .doc table.tableblock > tfoot {
@@ -547,23 +572,23 @@
 }
 
 .doc .admonitionblock.note > table {
-  border-color: #1A66F7;
+  border-color: var(--note-color);
 }
 
 .doc .admonitionblock.tip > table {
-  border-color: #697387;
+  border-color: var(--tip-color);
 }
 
 .doc .admonitionblock.warning > table {
-  border-color: #BF8532;
+  border-color: var(--warning-color);
 }
 
 .doc .admonitionblock.important > table {
-  border-color: #CC4242;
+  border-color: var(--important-color);
 }
 
 .doc .admonitionblock.caution > table {
-  border-color: #CC4242;
+  border-color: var(--caution-color);
 }
 
 .doc .admonitionblock td.icon {
@@ -618,7 +643,7 @@
 
 .doc .admonitionblock td.content {
   width: 100%;
-  word-wrap: anywhere;
+  overflow-wrap: anywhere;
   min-width: 0;
 }
 
@@ -666,7 +691,7 @@
   width: auto;
   vertical-align: middle;
   object-fit: contain;
-  border: 1px solid #D4D4D4;
+  border: 1px solid var(--table-border-color);
   border-radius: 12px;
 }
 
@@ -967,7 +992,7 @@
   align-items: center;
   border: 2px solid transparent;
   border-radius: 12px;
-  border-color: #1A66F7;
+  border-color: var(--note-color);
   padding: 1rem;
   box-sizing: border-box;
   padding: 1rem 1rem 0.75rem;
@@ -1010,7 +1035,7 @@
   overflow-x: auto;
   padding: 0.875em;
   border-radius: inherit;
-  color: #FFFFFF;
+  color: var(--color-white);
   max-width: 100%;
   box-sizing: border-box;
 }
@@ -1036,6 +1061,7 @@
   padding-left: 2em; /* Add space for the SVG */
   cursor: pointer; /* Indicate clickable */
   transition: border-radius 0.3s ease;
+  font-style: normal; /* Override italic style from caption */
 }
 
 /* Add the arrow-down SVG after the title */
@@ -1128,7 +1154,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #E8E8E8;
+  background-color: var(--code-comment-color);
   border: none;
   border-radius: 50%;
   color: inherit;
@@ -1348,7 +1374,7 @@
 
 .doc .nobreak {
   hyphens: none;
-  word-wrap: normal;
+  overflow-wrap: normal;
 }
 
 .doc :not(pre).pre-wrap {
@@ -1388,7 +1414,7 @@
 
 
 /* paragraphs, lists, tables, blockquotes all get 16px bottom spacing */
-.doc p,
+.doc :not(li) > p,
 .doc blockquote,
 .doc ul,
 .doc ol,
@@ -1400,7 +1426,7 @@
 
 /* inline links pick up the new blue */
 .doc a {
-  color: #2152E5;
+  color: var(--link-font-color);
 }
 
 /* Image Modal Styles */
@@ -1411,7 +1437,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.85);
+  background-color: var(--modal-overlay-background);
   z-index: 9999;
   overflow: auto;
   justify-content: center;
@@ -1436,7 +1462,7 @@
 }
 
 .image-modal-title {
-  color: #fff;
+  color: var(--color-white);
   margin-top: 1rem;
   font-size: 1rem;
   text-align: center;
@@ -1459,12 +1485,12 @@
 }
 
 .doc .circle-green {
-  color: #008542 !important;
+  color: var(--link-success-color) !important;
   font-weight: var(--heading-font-weight);
 }
 
 .doc .circle-red {
-  color: #8F001C !important;
+  color: var(--link-error-color) !important;
   font-weight: var(--heading-font-weight);
 }
 
@@ -1513,4 +1539,127 @@
   cursor: default !important;
 }
 
+/* Platform Badge Tooltips - CircleCI Web App Style */
+:root {
+  --tooltip-max-width: 300;
+  --tooltip-bg-light: #293548;
+  --tooltip-text-light: #ffffff;
+  --tooltip-bg-dark: #E5E7EB;
+  --tooltip-text-dark: #293548;
+}
 
+.platform-badge {
+  position: relative;
+  cursor: default;
+  flex-shrink: 0;
+}
+
+/* Light mode tooltip - dark background with white text */
+.platform-badge::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 16px;
+  background: var(--tooltip-bg-light);
+  color: var(--tooltip-text-light);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: normal;
+  max-width: calc(var(--tooltip-max-width) * 1px);
+  width: max-content;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s ease-in-out;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Left-aligned tooltip for left edge */
+.platform-badge[style*="--tooltip-align: left"]::before {
+  left: 0;
+  transform: translateX(0);
+}
+
+.platform-badge[style*="--tooltip-align: left"]::after {
+  left: 20px;
+  transform: translateX(0);
+}
+
+/* Right-aligned tooltip for right edge */
+.platform-badge[style*="--tooltip-align: right"]::before {
+  left: auto;
+  right: 0;
+  transform: translateX(0);
+}
+
+.platform-badge[style*="--tooltip-align: right"]::after {
+  left: auto;
+  right: 20px;
+  transform: translateX(0);
+}
+
+/* Ensure tooltip stays within viewport on mobile */
+@media (max-width: 640px) {
+  .platform-badge::before {
+    max-width: 250px;
+  }
+}
+
+/* Dark mode tooltip - light background with dark text (inverted) */
+[data-theme="dark"] .platform-badge::before {
+  background: var(--tooltip-bg-dark);
+  color: var(--tooltip-text-dark);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Show tooltip only when visibility class is applied (after position calculated) */
+.platform-badge.tooltip-visible::before,
+.platform-badge.tooltip-visible::after {
+  opacity: 1;
+}
+
+/* Light mode arrow - dark color matching tooltip */
+.platform-badge::after {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 10px - 1px); /* Overlap with tooltip by 1px to hide gap */
+  left: 50%;
+  transform: translateX(-50%) translateY(50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid var(--tooltip-bg-light); /* Points down */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.05s ease-out; /* Faster than tooltip, appears first */
+  z-index: 999; /* Just below tooltip to render behind */
+}
+
+/* Dark mode arrow - light color matching inverted tooltip */
+[data-theme="dark"] .platform-badge::after {
+  border-top-color: var(--tooltip-bg-dark);
+}
+
+/* Focus outline for accessibility */
+.platform-badge:focus {
+  outline: 2px solid var(--tooltip-bg-light);
+  outline-offset: 2px;
+}
+
+[data-theme="dark"] .platform-badge:focus {
+  outline-color: var(--tooltip-bg-dark);
+}
+
+
+
+/* Page vote buttons - dark mode muted color for text and icons */
+[data-theme="dark"] #docs-vote-yes,
+[data-theme="dark"] #docs-vote-no {
+  color: var(--dark-text-muted);
+}

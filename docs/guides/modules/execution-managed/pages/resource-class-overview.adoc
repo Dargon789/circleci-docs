@@ -1,57 +1,57 @@
 = Resource class overview
 :page-platform: Cloud, Server v4+
-:page-description: An overview of resource classes in CircleCI
+:page-description: Learn how to use resource classes in CircleCI to specify compute resources for jobs, configure self-hosted runners, and choose execution environments.
 :experimental:
+
+Use the `resource_class` key in your `.circleci/config.yml` to control the compute resources available to each job. Specifying the right resource class speeds up builds and reduces credit usage. Over-provisioned jobs cost more than necessary, and under-provisioned jobs run slowly or fail.
 
 Use resource classes to:
 
-* Specify compute resource size (CPU and RAM) for running a xref:about-circleci:concepts.adoc#jobs[job].
-* Configure xref:execution-runner:runner-concepts.adoc#namespaces-and-resource-classes[self-hosted runners] for use in your `.circleci/config.yml` file.
+* Specify compute resource size (CPU and RAM) for running a job.
+* Configure xref:execution-runner:runner-concepts.adoc#namespaces-and-resource-classes[Self-Hosted Runners] for use in your `.circleci/config.yml` file.
 * Specify an execution environment.
-
-[#introduction]
-== Introduction
-
-The `resource_class` configuration option has multiple uses: specifying compute resource size, optimizing executors, configuring self-hosted runners, and specifying an execution environment.
 
 The most common usage is to specify CPU and RAM requirements for a job by configuring the `resource_class` key for an executor.
 
+.Specify a resource class for a Docker job
 [source,yaml]
 ----
 jobs:
   my-job:
-    docker: # use the Docker executor
+    docker:
       - image: cimg/base:2022.09 # specify a Docker image
-    resource_class: xlarge # specify a resource class
+    resource_class: xlarge # sets CPU and RAM for this job
     steps:
       - run: echo "Hello World"
 ----
 
 Executor resource classes are specified by size, for example, `small` or `medium`. Each size corresponds to specific CPU and RAM requirements.
 
-NOTE: **For a full list of available resource class options,** see the xref:reference:ROOT:configuration-reference.adoc#resourceclass[configuration reference]. The link:https://circleci.com/product/features/resource-classes[resource class product page] provides information on credit usage per resource class, and resource class availability for each plan type.
+NOTE: **For a full list of available resource class options,** see the xref:reference:ROOT:configuration-reference.adoc#resourceclass[Configuration Reference]. The link:https://circleci.com/product/features/resource-classes[resource class product page] provides information on credit usage per resource class, and resource class availability for each plan type.
 
-When using CircleCI's self-hosted runners, use the `resource_class` key in your project configuration to specify which runner to use for a job. Self-hosted runner resource classes are assigned and configured during the xref:execution-runner:runner-overview.adoc#getting-started[installation process].
+When using CircleCI's self-hosted runners, use the `resource_class` key in your project configuration to specify which runner to use for a job. Self-hosted runner resource classes are assigned and configured during the xref:execution-runner:runner-overview.adoc#getting-started[Runner Installation Process].
 
+.Self-hosted runner resource class
 [source,yaml]
 ----
 jobs:
   my-job:
     machine: true
-    resource_class: <my-namespace>/<my-runner>
+    resource_class: <my-namespace>/<my-runner> # namespace/runner-name assigned during runner installation
     steps:
       - run: echo "Hello runner"
 ----
 
 Another use of the `resource_class` key is to specify an execution environment. For example, xref:using-arm.adoc[Arm] is a resource class option when using the `machine` executor.
 
+.Arm execution environment via resource class
 [source,yaml]
 ----
 jobs:
   my-job:
     machine:
-      image: ubuntu-2004:202101-01
-    resource_class: arm.medium
+      image: ubuntu-2404:current
+    resource_class: arm.medium # arm.medium or arm.large selects the Arm execution environment
     steps:
       - run: uname -a
       - run: echo "Hello, Arm!"
@@ -62,14 +62,16 @@ jobs:
 
 For config examples showing how to use the `resource_class` key to **specify CPU and RAM size** for an execution environment, see the following sections of the configuration reference page:
 
-* xref:reference:ROOT:configuration-reference.adoc#docker-execution-environment[Docker resource classes]
-* xref:reference:ROOT:configuration-reference.adoc#linuxvm-execution-environment[Linux VM resource classes]
-* xref:reference:ROOT:configuration-reference.adoc#macos-execution-environment[macOS resource classes]
-* xref:reference:ROOT:configuration-reference.adoc#windows-execution-environment[Windows resource classes]
-* GPU resource classes: xref:reference:ROOT:configuration-reference.adoc#gpu-execution-environment-linux[Linux] and xref:reference:ROOT:configuration-reference.adoc#gpu-execution-environment-windows[Windows]
-* xref:reference:ROOT:configuration-reference.adoc#arm-execution-environment-linux[Arm resource classes]
+* xref:reference:ROOT:configuration-reference.adoc#docker-execution-environment[Docker Resource Classes]
+* xref:reference:ROOT:configuration-reference.adoc#linuxvm-execution-environment[Linux VM Resource Classes]
+* xref:reference:ROOT:configuration-reference.adoc#macos-execution-environment[macOS Resource Classes]
+* xref:reference:ROOT:configuration-reference.adoc#windows-execution-environment[Windows Resource Classes]
+* GPU resource classes:
+** xref:reference:ROOT:configuration-reference.adoc#gpu-execution-environment-linux[Linux]
+** xref:reference:ROOT:configuration-reference.adoc#gpu-execution-environment-windows[Windows]
+* xref:reference:ROOT:configuration-reference.adoc#arm-execution-environment-linux[Arm Resource Classes]
 
-NOTE: **To get started setting up a self-hosted runner**, see the xref:execution-runner:runner-overview.adoc#getting-started[Getting started] section of the Self-hosted runners overview.
+NOTE: **To get started setting up a self-hosted runner**, see the xref:execution-runner:runner-overview.adoc#getting-started[Getting Started] section of the Self-hosted runners overview.
 
 [#default-resource-class]
 == Default resource class
@@ -77,7 +79,7 @@ NOTE: **To get started setting up a self-hosted runner**, see the xref:execution
 If a `resource_class` is not explicitly declared for a job, CircleCI will use a default resource class size. Defaults are subject to change. It is best practice to specify a resource class, rather than relying on a default.
 
 [#resource-class-usage-tools]
-== Resource class usage tools
+== View and monitor resource class usage
 
 Information about the resource classes used in your jobs can be found in the web app, or by using the API. See the sections below for details.
 
@@ -89,7 +91,7 @@ The job details page in the web app shows the resource class used for a job.
 .Resource class identifier in web app
 image::guides:ROOT:resource-class-job.png[Screenshot showing how to view the resource class used for a job in the web app]
 
-Alternatively, use the "Get job details" endpoint to return information about a job, including the resource class used. For usage steps see the xref:toolkit:api-developers-guide.adoc#get-job-details[get job details] how-to guide.
+Alternatively, use the "Get job details" endpoint to return information about a job, including the resource class used. For usage steps see the xref:toolkit:api-developers-guide.adoc#get-job-details[Get Job Details] how-to guide.
 
 [#view-resource-usage-per-job]
 === View resource usage per job
@@ -99,5 +101,5 @@ include::ROOT:partial$execution-resources/resource-class-view.adoc[]
 [#see-also]
 == See also
 
-* For a full list of available resource class options, see the xref:reference:ROOT:configuration-reference.adoc#resourceclass[configuration reference].
+* For a full list of available resource class options, see the xref:reference:ROOT:configuration-reference.adoc#resourceclass[Configuration Reference].
 * For information on credit usage per resource class, and to find out resource class availability per plan type, see the link:https://circleci.com/product/features/resource-classes[resource class product page].

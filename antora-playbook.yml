@@ -1,7 +1,14 @@
 site:
   title: CircleCI Docs
   url: https://circleci.com/docs
-  robots: allow
+  robots: |
+    User-agent: *
+    Allow: /
+
+    Sitemap: https://circleci.com/docs/sitemap.xml
+
+    # llms.txt - Structured documentation for AI/LLM consumption
+    # See https://circleci.com/docs/llms.txt for machine-readable documentation
   keys:
     cookiebot: a28b71f3-4d2e-4eac-93bc-34929948dd7d
     google_analytics: 'GTM-W9HDVK'
@@ -19,21 +26,15 @@ content:
   - url: .
     start_path: docs/orbs
   - url: .
+    start_path: docs/server-admin-4.10
+  - url: .
     start_path: docs/server-admin-4.9
   - url: .
     start_path: docs/server-admin-4.8
   - url: .
     start_path: docs/server-admin-4.7
   - url: .
-    start_path: docs/server-admin-4.6
-  - url: .
-    start_path: docs/server-admin-4.5
-  - url: .
-    start_path: docs/server-admin-4.4
-  - url: .
-    start_path: docs/server-admin-4.3
-  - url: .
-    start_path: docs/server-admin-4.2
+    start_path: docs/services
   - url: .
     start_path: docs/contributors
 ui:
@@ -54,9 +55,10 @@ asciidoc:
     serverversion44: 4.4.7
     serverversion45: 4.5.5
     serverversion46: 4.6.6
-    serverversion47: 4.7.13
-    serverversion48: 4.8.7
-    serverversion49: 4.9.1
+    serverversion47: 4.7.15
+    serverversion48: 4.8.11
+    serverversion49: 4.9.5
+    serverversion410: 4.10.0
     terraformversion: 0.15.4
     dockerversion: v28
     kubectlversion: 1.19
@@ -68,6 +70,8 @@ asciidoc:
     idseparator: "-"
   extensions:
   - '@asciidoctor/tabs'
+  - ./extensions/theme-icon-extension.js
+  - ./extensions/subsection-badge-extension.js
 urls:
   latest_version_segment: latest
   latest_version_segment_strategy: redirect:to
@@ -105,12 +109,7 @@ antora:
       - rst
   - require: ./extensions/unlisted-pages-extension.js
     allowedUnlistedPages:
-      - 'test:smarter-testing.adoc'
-      - 'test:getting-started-with-smarter-testing.adoc'
-      - 'test:use-smarter-testing-for-local-development.adoc'
-      - 'test:set-up-test-impact-analysis.adoc'
-      - 'test:use-dynamic-test-splitting.adoc'
-      - 'test:auto-rerun-failed-tests.adoc'
+      - 'deploy:deploy-to-pypi-registry.adoc'
   - require: '@sntke/antora-mermaid-extension'
     mermaid_initialize_options:
       start_on_load: true
@@ -123,3 +122,7 @@ antora:
         primary_border_color: '#008542'
         primary_text_color: '#00381A'
   - require: ./extensions/detect-unused-media-extension.js
+    excludepatterns:
+      - '*-dark.svg'
+      - 'icons/*.svg'
+  - require: ./extensions/llms-txt-generator-extension.js

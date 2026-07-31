@@ -47,7 +47,7 @@ lein repl :connect host.docker.internal:16000
 (circle.http.api.admin-commands/get-setting :wfc-workflow-deletion-interval)
 ----
 +
-By default, the interval is set to `0`. This value must be updated to a number greater than `0` for WFC deletion to run every *n* seconds. For example, the following command sets it to 1000 seconds:
+By default, the interval is set to `0`. This value must be updated to a number greater than `0` for WFC deletion to run every *n* milliseconds. For example, the following command sets it to 1000 milliseconds or 1 second:
 +
 [source,clojure]
 ----
@@ -88,4 +88,4 @@ NOTE: **Object Storage Paths** +
 If a retention policy of `n` days is configured for both MongoDB and PostgreSQL data, you can set `n+1` for **all objects** in your S3/GCS buckets to expire at `n+1` days. This ensures alignment between database retention and object storage retention.
 
 CAUTION: **Audit Logs** +
-Be sure to configure exceptions for critical paths, such as `audit-logs/*`, in accordance with your organization's compliance or audit requirements. Objects under these paths should not be expired by default.
+Be sure to configure exceptions for critical paths, such as `audit-logs/*`, in accordance with your organization's compliance or audit requirements. Objects under these paths must not be expired by default.

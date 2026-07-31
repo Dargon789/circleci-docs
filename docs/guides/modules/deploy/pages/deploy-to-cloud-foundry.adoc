@@ -1,6 +1,6 @@
 = Deploy to Cloud Foundry
 :page-platform: Cloud, Server v4+
-:page-description: This is document provides examples of deploying to Cloud Foundry.
+:page-description: This document provides examples of deploying to Cloud Foundry.
 :experimental:
 
 In this how-to guide, you will learn how to configure CircleCI to deploy to Cloud Foundry.
@@ -50,7 +50,7 @@ This example is the first step in a link:https://docs.cloudfoundry.org/devguide/
 [#live-deployment]
 === 3. Live deployment
 
-Until now, the previously pushed "app-name" has not changed.  The final step is to route the production URL to our dark application, stop traffic to the previous version, and rename the applications.
+Until now, the previously pushed "app-name" has not changed. The final step is to route the production URL to our dark application, stop traffic to the previous version, and rename the applications.
 
 ```yaml
       - run:
@@ -81,20 +81,27 @@ workflows:
       - dark-deploy:
           requires:
             - test
-          filters:
-            branches:
-              only: main
+          filters: pipeline.git.branch == "main" # only run the dark-deploy job on the main branch
       - hold:
           type: approval
           requires:
             - dark-deploy
-          filters:
-            branches:
-              only: main
+          filters: pipeline.git.branch == "main" # only run the hold approval job on the main branch
       - live-deploy:
           requires:
             - hold # manual approval required via the CircleCI UI to run the live-deploy job
-          filters:
-            branches:
-              only: main
+          filters: pipeline.git.branch == "main" # only run the live-deploy job on the main branch
 ```
+
+[#track-deployments-with-deploy-markers]
+== Track your deployments with deploy markers
+
+Deploy markers provide a way to track and manage your Cloud Foundry deployments in the CircleCI web app. When you add deploy markers to your deployment job, you can view a timeline of all deployments, track their status, and enable rollback and deploy pipelines.
+
+You have two options for setting up deploy markers:
+
+* *In-app setup*: Use the guided setup in the CircleCI web app when configuring a xref:set-up-rollbacks.adoc[Rollback Pipeline] or xref:set-up-deploys.adoc[Deploy Pipeline]. The setup will walk you through adding deploy markers to your configuration. If you are using GitHub and have the CircleCI GitHub App installed, you can use AI to generate the deploy marker configuration automatically.
+
+* *Manual setup*: Add deploy marker commands directly to your `.circleci/config.yml` file by following the xref:configure-deploy-markers.adoc[Configure Deploy Markers] guide.
+
+Both approaches will enable you to track deployment history and manage rollbacks directly from the CircleCI web app.
